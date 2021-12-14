@@ -23,7 +23,6 @@ public class SimpleDirectionalMove {
     }
 
     public enum Direction {
-
         LEFT,
         RIGHT,
         TOP,

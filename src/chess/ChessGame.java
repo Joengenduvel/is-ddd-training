@@ -11,15 +11,19 @@ import ddd.core.AggregateRoot;
 import ddd.core.DomainEvent;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ChessGame extends AggregateRoot<ChessGameId> {
-    private final ChessBoard board;
+    private final Map<BoardPosition, ChessPiece> pieces;
+    private final List<Move> pastMoves;
 
     public ChessGame(ChessGameId id, Map<BoardPosition, ChessPiece> pieces) {
         super(id);
-        this.board = new ChessBoard(pieces, new ArrayList<>(0));
+        this.pieces = new HashMap<>(pieces);
+        this.pastMoves = new ArrayList<>();
     }
 
     public ChessGame(ChessGameId gameId) {
@@ -57,6 +61,13 @@ public class ChessGame extends AggregateRoot<ChessGameId> {
             put(new BoardPosition('g', (short) 7), new Pawn(ChessColor.BLACK));
             put(new BoardPosition('h', (short) 7), new Pawn(ChessColor.BLACK));
         }});
+    }
+
+    public boolean makeMove(ChessColor color, Move move){
+
+        // remove the pieces involved futurePieces.remove()
+        // Add the new positions
+        return false;
     }
 
     @Override
