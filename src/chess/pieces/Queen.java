@@ -2,8 +2,8 @@ package chess.pieces;
 
 import chess.ChessColor;
 
-public class Horse extends ChessPiece{
-    public Horse(ChessColor color) {
+public class Queen  extends ChessPiece{
+    public Queen(ChessColor color) {
         super(color);
     }
 }
