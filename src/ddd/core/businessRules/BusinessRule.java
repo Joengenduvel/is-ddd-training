@@ -1,8 +1,5 @@
 package ddd.core.businessRules;
 
-import chess.businessRules.PieceNotPresentAtPosition;
-
-import java.util.ArrayList;
 import java.util.List;
 
 /// <summary>
