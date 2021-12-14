@@ -1,5 +1,8 @@
 package chess;
 
+import chess.businessRules.ValidRuleOnBoardLevel;
+import chess.businessRules.ValidRuleOnGameLevel;
+import chess.businessRules.ValidRuleOnPieceLevel;
 import chess.pieces.Bishop;
 import chess.pieces.ChessPiece;
 import chess.pieces.King;
@@ -64,6 +67,12 @@ public class ChessGame extends AggregateRoot<ChessGameId> {
     }
 
     public boolean makeMove(ChessColor color, Move move){
+        ChessPiece chessPiece = pieces.get(move.getFrom());
+        ValidRuleOnPieceLevel validRuleOnPieceLevel = new ValidRuleOnPieceLevel(chessPiece);
+        ValidRuleOnBoardLevel validRuleOnBoardLevel = new ValidRuleOnBoardLevel();
+        ValidRuleOnGameLevel validRuleOnGameLevel = new ValidRuleOnGameLevel();
+
+        validRuleOnPieceLevel.And(validRuleOnBoardLevel).And(validRuleOnGameLevel).ThrowIfNotSatisfied();
 
         // remove the pieces involved futurePieces.remove()
         // Add the new positions
