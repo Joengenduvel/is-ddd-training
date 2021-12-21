@@ -3,6 +3,7 @@ package chess;
 import chess.businessRules.ValidRuleOnBoardLevel;
 import chess.businessRules.ValidRuleOnGameLevel;
 import chess.businessRules.ValidRuleOnPieceLevel;
+import chess.events.MoveMade;
 import chess.pieces.Bishop;
 import chess.pieces.ChessPiece;
 import chess.pieces.King;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ChessGame extends AggregateRoot<ChessGameId> {
+
     private final Map<BoardPosition, ChessPiece> pieces;
     private final List<Move> pastMoves;
 
@@ -55,7 +57,7 @@ public class ChessGame extends AggregateRoot<ChessGameId> {
             put(new BoardPosition('f', (short) 8), new Bishop(ChessColor.BLACK));
             put(new BoardPosition('g', (short) 8), new King(ChessColor.BLACK));
             put(new BoardPosition('h', (short) 8), new Rook(ChessColor.BLACK));
-            put(new BoardPosition('a', (short) 8), new Pawn(ChessColor.BLACK));
+            put(new BoardPosition('a', (short) 7), new Pawn(ChessColor.BLACK));
             put(new BoardPosition('b', (short) 7), new Pawn(ChessColor.BLACK));
             put(new BoardPosition('c', (short) 7), new Pawn(ChessColor.BLACK));
             put(new BoardPosition('d', (short) 7), new Pawn(ChessColor.BLACK));
@@ -66,21 +68,44 @@ public class ChessGame extends AggregateRoot<ChessGameId> {
         }});
     }
 
-    public boolean makeMove(ChessColor color, Move move){
+    public Map<BoardPosition, ChessPiece> getPieces() {
+        return Collections.unmodifiableMap(pieces);
+    }
+
+    public boolean makeMove(final ChessColor color, final Move move){
         ChessPiece chessPiece = pieces.get(move.getFrom());
-        ValidRuleOnPieceLevel validRuleOnPieceLevel = new ValidRuleOnPieceLevel(chessPiece);
+        ValidRuleOnPieceLevel validRuleOnPieceLevel = new ValidRuleOnPieceLevel(chessPiece, move);
         ValidRuleOnBoardLevel validRuleOnBoardLevel = new ValidRuleOnBoardLevel();
         ValidRuleOnGameLevel validRuleOnGameLevel = new ValidRuleOnGameLevel();
 
         validRuleOnPieceLevel.And(validRuleOnBoardLevel).And(validRuleOnGameLevel).ThrowIfNotSatisfied();
 
+        raiseEvent(new MoveMade(chessPiece, move.getFrom(), move.getTo()));
+        pastMoves.add(move);
+
         // remove the pieces involved futurePieces.remove()
         // Add the new positions
-        return false;
+        return true;
     }
 
     @Override
-    protected void when(DomainEvent domainEvent) {
+    protected void when(final DomainEvent domainEvent) {
+        if (domainEvent instanceof MoveMade) {
+            handleMoveMade((MoveMade) domainEvent);
+        }
+    }
 
+    private void handleMoveMade(final MoveMade moveMade) {
+        ChessPiece piece = pieces.remove(moveMade.getCurrentPosition());
+
+        if (piece == null) {
+            throw new IllegalStateException(
+                    "Cannot handle MoveMade event, as there is no chess piece at location "
+                            + moveMade.getCurrentPosition().getColumn()
+                            + moveMade.getTargetPosition().getRow()
+            );
+        }
+
+        pieces.put(moveMade.getTargetPosition(), piece);
     }
 }

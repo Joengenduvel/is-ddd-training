@@ -1,9 +1,11 @@
 package chess.pieces;
 
 import chess.ChessColor;
+import chess.Move;
 import ddd.core.ValueObject;
 
-public class ChessPiece extends ValueObject {
+public abstract class ChessPiece extends ValueObject {
+
     private final ChessColor color;
 
     public ChessPiece(ChessColor color) {
@@ -18,4 +20,6 @@ public class ChessPiece extends ValueObject {
     public ChessColor getColor() {
         return color;
     }
+
+    public abstract boolean isValidMove(final Move move);
 }
