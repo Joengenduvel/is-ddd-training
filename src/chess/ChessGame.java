@@ -112,4 +112,8 @@ public class ChessGame extends EventSourcedAggregate<ChessGameId> {
 
         pieces.put(moveMade.getTargetPosition(), piece);
     }
+
+    public void start() {
+        
+    }
 }

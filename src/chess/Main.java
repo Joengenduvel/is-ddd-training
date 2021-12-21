@@ -1,10 +1,24 @@
 package chess;
 
+import chess.application.Application;
+import chess.events.MoveMade;
+import ddd.core.DomainEvent;
+import ddd.core.EventBus;
+import ddd.core.EventHandler;
 import ddd.core.businessRules.BusinessRuleViolationException;
 
 public class Main {
 
     public static void main(final String[] args) {
+        EventBus bus;
+
+        EventHandler<MoveMade> startedEventListener = event -> System.out.println("Move made by ");
+        bus.subscribe(startedEventListener);
+
+        Application app = new Application();
+        app.startGame();
+
+
         final ChessGameId gameId = new ChessGameId();
         final ChessGame game = new ChessGame(gameId);
 

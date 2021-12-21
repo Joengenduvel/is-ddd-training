@@ -5,4 +5,8 @@ public class MakeMoveCommand {
     PlayerId playerID;
     BoardPosition from;
     BoardPosition to;
+
+    public ChessGameId getGameId() {
+        return null;
+    }
 }

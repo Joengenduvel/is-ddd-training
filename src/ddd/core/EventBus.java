@@ -1,6 +1,6 @@
 package ddd.core;
 
-interface EventBus {
+public interface EventBus {
     /**
      * Publish event to it's subscribers.
      * @param domainEvent
