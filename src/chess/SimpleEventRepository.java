@@ -20,7 +20,8 @@ public class SimpleEventRepository implements EventRepository<DomainEvent<ChessG
 
     @Override
     public void addEvent(final DomainEvent<ChessGameId> domainEvent) {
-        events.getOrDefault(domainEvent.getId(), new ArrayList<>()).add(domainEvent);
+        events.putIfAbsent(domainEvent.getId(), new ArrayList<>());
+        events.get(domainEvent.getId()).add(domainEvent);
     }
 
     @Override
