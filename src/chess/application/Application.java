@@ -31,7 +31,7 @@ public class Application {
         chessGame.makeMove(ChessColor.WHITE, move);
     }
 
-    private ChessGame getGameById(ChessGameId id) {
+    public ChessGame getGameById(ChessGameId id) {
         ChessGame chessGame = new ChessGame(id);
         List<DomainEvent<ChessGameId>> pastEvents = eventRepository.getEventListById(chessGame.getId());
         chessGame.build(pastEvents);

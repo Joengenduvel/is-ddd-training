@@ -1,8 +1,9 @@
 package chess;
 
-import ddd.core.ValueObject;
+import lombok.Value;
 
-public class BoardPosition extends ValueObject {
+@Value
+public class BoardPosition{
     private final char column;
     private final short row;
 
@@ -20,7 +21,7 @@ public class BoardPosition extends ValueObject {
     }
 
     @Override
-    protected Object[] GetAtomicValues() {
-        return new Object[]{column, row};
+    public String toString() {
+        return "" + column + row;
     }
 }

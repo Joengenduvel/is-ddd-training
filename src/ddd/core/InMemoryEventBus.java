@@ -6,7 +6,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class InMemoryEventBus implements EventBus{
 
-    ConcurrentHashMap<Class<? extends DomainEvent<?>>, List<EventHandler<? extends DomainEvent<? extends AggregateIdentifier>>>> listeners = new ConcurrentHashMap<>();
+    public final static EventBus INSTANCE = new InMemoryEventBus();
+
+    ConcurrentHashMap<Class<? extends DomainEvent<?>>, List<EventHandler<? extends DomainEvent<? extends AggregateIdentifier>>>> listeners;
+
+    private InMemoryEventBus() {
+        this.listeners = new ConcurrentHashMap<>();
+    }
 
     @Override
     public <T extends DomainEvent<? extends AggregateIdentifier>> void publish(T domainEvent) {

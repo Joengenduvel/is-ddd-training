@@ -1,62 +1,53 @@
 package chess;
 
 import chess.application.Application;
+import chess.events.GameStarted;
 import chess.events.MoveMade;
+import chess.pieces.ChessPiece;
 import ddd.core.EventBus;
 import ddd.core.EventHandler;
 import ddd.core.InMemoryEventBus;
 import ddd.core.businessRules.BusinessRuleViolationException;
 
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
+
 public class Main {
+    static Application app = new Application();
 
     public static void main(final String[] args) {
-        EventBus bus = new InMemoryEventBus();
+        EventBus bus = InMemoryEventBus.INSTANCE;
 
         EventHandler<MoveMade> startedEventListener = new EventHandler<MoveMade>() {
             @Override
             public void handle(MoveMade event) {
+
                 System.out.println("Move made by ");
+                Map<BoardPosition, ChessPiece> pieces = app.getGameById(event.getId()).getPieces();
+                for(var entry : pieces.entrySet()){
+                    System.out.println(entry.getKey() + " = " + entry.getValue());
+                }
             }
         };
         bus.subscribe(MoveMade.class, startedEventListener);
 
-        Application app = new Application();
+        AtomicReference<ChessGameId> id = new AtomicReference<>();
+        bus.subscribe(GameStarted.class, event -> {
+            System.out.println("Started game " + event.getId());
+            id.set(event.getId());
+        });
         app.startGame();
 
-
-        final ChessGameId gameId = new ChessGameId();
-        final ChessGame game = new ChessGame(gameId);
 
         final BoardPosition a2 = new BoardPosition('a', (short) 2);
         final BoardPosition a3 = new BoardPosition('a', (short) 3);
 
-        System.out.println("a2 - " + game.getPieces().get(a2));
-        System.out.println("a3 - " + game.getPieces().get(a3));
+        ChessGame game1 = app.getGameById(id.get());
 
-        game.makeMove(ChessColor.WHITE, moveMostLeftPieceOfWhiteOneUp());
+        System.out.println("a2 - " + game1.getPieces().get(a2));
+        System.out.println("a3 - " + game1.getPieces().get(a3));
 
-        System.out.println("a2 - " + game.getPieces().get(a2));
-        System.out.println("a3 - " + game.getPieces().get(a3));
-
-        try {
-            game.makeMove(ChessColor.WHITE, moveMostLeftPieceOfWhiteOneUp());
-        } catch (BusinessRuleViolationException e) {
-            for( var violation : e.getViolations()){
-                System.out.println(violation.toString());
-            }
-            System.out.println("Successfully blocked invalid move for location without piece: ");
-        }
-
-
-
-        try {
-            game.makeMove(ChessColor.WHITE, moveKingForward());
-        } catch (BusinessRuleViolationException e) {
-            for( var violation : e.getViolations()){
-                System.out.println(violation.toString());
-            }
-            System.out.println("Successfully blocked invalid move for destination with piece: ");
-        }
+        app.makeMove(new MakeMoveCommand(id.get(), null, a2,a3));
     }
 
     private static Move moveKingForward() {

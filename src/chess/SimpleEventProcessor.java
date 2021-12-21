@@ -2,7 +2,9 @@ package chess;
 
 import ddd.core.AggregateIdentifier;
 import ddd.core.DomainEvent;
+import ddd.core.EventBus;
 import ddd.core.EventProcessor;
+import ddd.core.InMemoryEventBus;
 
 public class SimpleEventProcessor implements EventProcessor<ChessGameId> {
 
@@ -11,7 +13,7 @@ public class SimpleEventProcessor implements EventProcessor<ChessGameId> {
     );
 
     private final SimpleEventRepository repository;
-    // TODO - Add event bus
+    private final EventBus eventBus = InMemoryEventBus.INSTANCE;
 
     public SimpleEventProcessor(SimpleEventRepository repository) {
         this.repository = repository;
@@ -24,5 +26,6 @@ public class SimpleEventProcessor implements EventProcessor<ChessGameId> {
     @Override
     public void raise(final DomainEvent<ChessGameId> event) {
         repository.addEvent(event);
+        eventBus.publish(event);
     }
 }

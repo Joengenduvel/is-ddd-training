@@ -1,8 +1,10 @@
 package chess;
 
+import chess.businessRules.TwoPlayersJoined;
 import chess.businessRules.ValidRuleOnBoardLevel;
 import chess.businessRules.ValidRuleOnGameLevel;
 import chess.businessRules.ValidRuleOnPieceLevel;
+import chess.events.GameStarted;
 import chess.events.MoveMade;
 import chess.pieces.Bishop;
 import chess.pieces.ChessPiece;
@@ -21,6 +23,7 @@ import java.util.Map;
 public class ChessGame extends EventSourcedAggregate<ChessGameId> {
 
     private final Map<BoardPosition, ChessPiece> pieces;
+    private final ChessPlayer[] players = new ChessPlayer[2];
 
     public ChessGame(ChessGameId id, Map<BoardPosition, ChessPiece> pieces) {
         super(id);
@@ -110,6 +113,8 @@ public class ChessGame extends EventSourcedAggregate<ChessGameId> {
     }
 
     public void start() {
-        
+        new TwoPlayersJoined(players).ThrowIfNotSatisfied();
+        GameStarted gameStarted = new GameStarted(this.getId());
+        eventProcessor.raise(gameStarted);
     }
 }
