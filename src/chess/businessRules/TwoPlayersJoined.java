@@ -8,16 +8,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TwoPlayersJoined extends BusinessRule {
-    private final ChessPlayer[] players;
+    private final List<ChessPlayer> players;
 
-    public TwoPlayersJoined(ChessPlayer[] players) {
+    public TwoPlayersJoined(List<ChessPlayer> players) {
         this.players = players;
     }
 
     @Override
     public List<BusinessRuleViolation> CheckRule() {
         List<BusinessRuleViolation> rules = new ArrayList<>();
-        if(players[0] == null || players[1] == null)
+        if(players.size()!=2)
             rules.add(new NotAllPlayersJoined());
         return rules;
     }

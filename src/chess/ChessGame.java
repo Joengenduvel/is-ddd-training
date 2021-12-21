@@ -6,6 +6,7 @@ import chess.businessRules.ValidRuleOnGameLevel;
 import chess.businessRules.ValidRuleOnPieceLevel;
 import chess.events.GameStarted;
 import chess.events.MoveMade;
+import chess.events.PlayerJoined;
 import chess.pieces.Bishop;
 import chess.pieces.ChessPiece;
 import chess.pieces.King;
@@ -16,14 +17,16 @@ import chess.pieces.Rook;
 import ddd.core.EventSourcedAggregate;
 import ddd.core.EventSourcingHandler;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ChessGame extends EventSourcedAggregate<ChessGameId> {
 
     private final Map<BoardPosition, ChessPiece> pieces;
-    private final ChessPlayer[] players = new ChessPlayer[2];
+    private final List<ChessPlayer> players = new ArrayList<>(2);
 
     public ChessGame(ChessGameId id, Map<BoardPosition, ChessPiece> pieces) {
         super(id);
@@ -75,6 +78,7 @@ public class ChessGame extends EventSourcedAggregate<ChessGameId> {
     //public <E extends EventSourcedAggregate<ChessGameId>> Map<Class<?>, EventSourcingHandler<E, DomainEvent<ChessGameId>>> getHandlers() {
         return new HashMap<>(){{
             put(MoveMade.class, moveMade());
+            put(PlayerJoined.class, playerJoined());
         }};
     }
 
@@ -83,6 +87,13 @@ public class ChessGame extends EventSourcedAggregate<ChessGameId> {
             ChessPiece piece = a.pieces.remove(e.getCurrentPosition());
             a.pieces.put(e.getTargetPosition(), piece);
 
+            return a;
+        };
+    }
+
+    private static EventSourcingHandler<ChessGame, PlayerJoined> playerJoined() {
+        return (a, e) -> {
+            a.players.add(new ChessPlayer(e.getPlayerId(), e.getColor()));
             return a;
         };
     }
@@ -116,5 +127,19 @@ public class ChessGame extends EventSourcedAggregate<ChessGameId> {
         new TwoPlayersJoined(players).ThrowIfNotSatisfied();
         GameStarted gameStarted = new GameStarted(this.getId());
         eventProcessor.raise(gameStarted);
+    }
+
+    public void join(PlayerId playerId) {
+        switch (players.size()){
+            case 0:
+                eventProcessor.raise(new PlayerJoined(this.getId(), playerId, ChessColor.WHITE));
+                break;
+            case 1:
+                eventProcessor.raise(new PlayerJoined(this.getId(), playerId, ChessColor.BLACK));
+                break;
+            default:
+                //Error
+        }
+
     }
 }

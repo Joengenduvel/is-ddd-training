@@ -3,7 +3,6 @@ package chess.application;
 import chess.ChessColor;
 import chess.ChessGame;
 import chess.ChessGameId;
-import chess.MakeMoveCommand;
 import chess.Move;
 import chess.SimpleEventRepository;
 import ddd.core.DomainEvent;
@@ -12,16 +11,16 @@ import ddd.core.EventRepository;
 import java.util.List;
 
 public class Application {
-    EventRepository<DomainEvent<ChessGameId>, ChessGameId> eventRepository = new SimpleEventRepository();
+    EventRepository<DomainEvent<ChessGameId>, ChessGameId> eventRepository = SimpleEventRepository.INSTANCE;
 
-    public void startGame(){
-        ChessGame chessGame = getGameById(new ChessGameId());
+    public void startGame(ChessGameId id){
+        ChessGame chessGame = getGameById(id);
 
         chessGame.start();
     }
 
     public void makeMove(final MakeMoveCommand command){
-        ChessGame chessGame = getGameById(command.getChessGameId());
+        ChessGame chessGame = getGameById(command.getId());
 
         Move move = new Move(
                 command.getFrom(),
@@ -36,5 +35,10 @@ public class Application {
         List<DomainEvent<ChessGameId>> pastEvents = eventRepository.getEventListById(chessGame.getId());
         chessGame.build(pastEvents);
         return chessGame;
+    }
+
+    public void joinGame(final JoinCommand command) {
+        ChessGame game = getGameById(command.getId());
+        game.join(command.getPlayerId());
     }
 }

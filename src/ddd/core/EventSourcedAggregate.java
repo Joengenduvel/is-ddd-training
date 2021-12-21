@@ -24,7 +24,7 @@ public abstract class EventSourcedAggregate<TId extends AggregateIdentifier> ext
             if(handler != null){
                 handler.apply(this, event);
             }else{
-                System.err.println("Look at this");
+                System.err.println("Look at this: " + event.getClass());
             }
         }
         return this;

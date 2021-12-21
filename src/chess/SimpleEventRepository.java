@@ -12,9 +12,11 @@ import ddd.core.EventRepository;
 
 public class SimpleEventRepository implements EventRepository<DomainEvent<ChessGameId>, ChessGameId> {
 
+    public static final EventRepository<DomainEvent<ChessGameId>, ChessGameId> INSTANCE = new SimpleEventRepository();
+
     private final Map<AggregateIdentifier, List<DomainEvent<ChessGameId>>> events;
 
-    public SimpleEventRepository() {
+    private SimpleEventRepository() {
         events = new HashMap<>();
     }
 

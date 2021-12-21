@@ -1,42 +1,45 @@
 package chess;
 
 import chess.application.Application;
+import chess.application.JoinCommand;
+import chess.application.MakeMoveCommand;
 import chess.events.GameStarted;
 import chess.events.MoveMade;
 import chess.pieces.ChessPiece;
 import ddd.core.EventBus;
-import ddd.core.EventHandler;
 import ddd.core.InMemoryEventBus;
-import ddd.core.businessRules.BusinessRuleViolationException;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Main {
     static Application app = new Application();
+    private static EventBus bus = InMemoryEventBus.INSTANCE;
 
     public static void main(final String[] args) {
-        EventBus bus = InMemoryEventBus.INSTANCE;
-
-        EventHandler<MoveMade> startedEventListener = new EventHandler<MoveMade>() {
-            @Override
-            public void handle(MoveMade event) {
-
-                System.out.println("Move made by ");
-                Map<BoardPosition, ChessPiece> pieces = app.getGameById(event.getId()).getPieces();
-                for(var entry : pieces.entrySet()){
-                    System.out.println(entry.getKey() + " = " + entry.getValue());
-                }
-            }
-        };
-        bus.subscribe(MoveMade.class, startedEventListener);
 
         AtomicReference<ChessGameId> id = new AtomicReference<>();
+        id.set(new ChessGameId());
+        PlayerId players[] = new PlayerId[]{new PlayerId(UUID.randomUUID()),new PlayerId(UUID.randomUUID())};
+
+        bus.subscribe(MoveMade.class, event -> {
+
+            System.out.println("Move made by ");
+            printBoard(event.getId());
+        });
+
         bus.subscribe(GameStarted.class, event -> {
             System.out.println("Started game " + event.getId());
-            id.set(event.getId());
         });
-        app.startGame();
+
+        JoinCommand joinCommandPlayer1 = new JoinCommand(id.get(), players[0]);
+        app.joinGame(joinCommandPlayer1);
+
+        JoinCommand joinCommandPlayer2 = new JoinCommand(id.get(), players[1]);
+        app.joinGame(joinCommandPlayer2);
+
+        app.startGame(id.get());
 
 
         final BoardPosition a2 = new BoardPosition('a', (short) 2);
@@ -48,6 +51,13 @@ public class Main {
         System.out.println("a3 - " + game1.getPieces().get(a3));
 
         app.makeMove(new MakeMoveCommand(id.get(), null, a2,a3));
+    }
+
+    private static void printBoard(ChessGameId id) {
+        Map<BoardPosition, ChessPiece> pieces = app.getGameById(id).getPieces();
+        for(var entry : pieces.entrySet()){
+            System.out.println(entry.getKey() + " = " + entry.getValue());
+        }
     }
 
     private static Move moveKingForward() {
