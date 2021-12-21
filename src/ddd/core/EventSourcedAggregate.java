@@ -3,7 +3,12 @@ package ddd.core;
 import java.util.List;
 import java.util.Map;
 
+import chess.SimpleEventProcessor;
+
 public abstract class EventSourcedAggregate<TId extends AggregateIdentifier> extends Entity<TId> {
+
+    protected EventProcessor eventProcessor = SimpleEventProcessor.getInstance();
+
     protected EventSourcedAggregate(TId id) {
         super(id);
     }

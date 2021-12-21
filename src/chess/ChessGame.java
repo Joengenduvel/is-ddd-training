@@ -11,25 +11,20 @@ import chess.pieces.Knight;
 import chess.pieces.Pawn;
 import chess.pieces.Queen;
 import chess.pieces.Rook;
-import ddd.core.DomainEvent;
 import ddd.core.EventSourcedAggregate;
 import ddd.core.EventSourcingHandler;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ChessGame extends EventSourcedAggregate<ChessGameId> {
 
     private final Map<BoardPosition, ChessPiece> pieces;
-    private final List<Move> pastMoves;
 
     public ChessGame(ChessGameId id, Map<BoardPosition, ChessPiece> pieces) {
         super(id);
         this.pieces = new HashMap<>(pieces);
-        this.pastMoves = new ArrayList<>();
     }
 
     public ChessGame(ChessGameId gameId) {
@@ -70,8 +65,21 @@ public class ChessGame extends EventSourcedAggregate<ChessGameId> {
     }
 
     @Override
-    public <E extends EventSourcedAggregate<ChessGameId>> Map<Class<?>, EventSourcingHandler<E, DomainEvent<ChessGameId>>> getHandlers() {
-        return null;
+    @SuppressWarnings("rawtypes")
+    public Map<Class, EventSourcingHandler> getHandlers() {
+    //public <E extends EventSourcedAggregate<ChessGameId>> Map<Class<?>, EventSourcingHandler<E, DomainEvent<ChessGameId>>> getHandlers() {
+        return new HashMap<>(){{
+            put(MoveMade.class, moveMade());
+        }};
+    }
+
+    private static EventSourcingHandler<ChessGame, MoveMade> moveMade() {
+        return (a, e) -> {
+            ChessPiece piece = a.pieces.remove(e.getCurrentPosition());
+            a.pieces.put(e.getTargetPosition(), piece);
+
+            return a;
+        };
     }
 
     @Override
@@ -91,26 +99,12 @@ public class ChessGame extends EventSourcedAggregate<ChessGameId> {
 
         validRuleOnPieceLevel.And(validRuleOnBoardLevel).And(validRuleOnGameLevel).ThrowIfNotSatisfied();
 
-        new MoveMade(this.getId(),chessPiece, move.getFrom(), move.getTo());
-        pastMoves.add(move);
+        MoveMade moveMade = new MoveMade(this.getId(), chessPiece, move.getFrom(), move.getTo());
+        eventProcessor.raise(moveMade);
 
         // remove the pieces involved futurePieces.remove()
         // Add the new positions
         return true;
-    }
-
-    private void handleMoveMade(final MoveMade moveMade) {
-        ChessPiece piece = pieces.remove(moveMade.getCurrentPosition());
-
-        if (piece == null) {
-            throw new IllegalStateException(
-                    "Cannot handle MoveMade event, as there is no chess piece at location "
-                            + moveMade.getCurrentPosition().getColumn()
-                            + moveMade.getTargetPosition().getRow()
-            );
-        }
-
-        pieces.put(moveMade.getTargetPosition(), piece);
     }
 
     public void start() {
