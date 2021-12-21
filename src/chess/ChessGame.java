@@ -27,6 +27,8 @@ public class ChessGame extends EventSourcedAggregate<ChessGameId> {
         this.pieces = new HashMap<>(pieces);
     }
 
+
+
     public ChessGame(ChessGameId gameId) {
         this(gameId, new HashMap<>() {{
             put(new BoardPosition('a', (short) 1), new Rook(ChessColor.WHITE));

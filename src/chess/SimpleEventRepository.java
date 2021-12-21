@@ -10,22 +10,22 @@ import ddd.core.AggregateIdentifier;
 import ddd.core.DomainEvent;
 import ddd.core.EventRepository;
 
-public class SimpleEventRepository implements EventRepository<DomainEvent<? extends AggregateIdentifier>> {
+public class SimpleEventRepository implements EventRepository<DomainEvent<ChessGameId>, ChessGameId> {
 
-    private final Map<AggregateIdentifier, List<DomainEvent<? extends AggregateIdentifier>>> events;
+    private final Map<AggregateIdentifier, List<DomainEvent<ChessGameId>>> events;
 
     public SimpleEventRepository() {
         events = new HashMap<>();
     }
 
     @Override
-    public void addEvent(final DomainEvent<? extends AggregateIdentifier> domainEvent) {
+    public void addEvent(final DomainEvent<ChessGameId> domainEvent) {
         events.putIfAbsent(domainEvent.getId(), new ArrayList<>());
         events.get(domainEvent.getId()).add(domainEvent);
     }
 
     @Override
-    public List<DomainEvent<? extends AggregateIdentifier>> getEventListById(final AggregateIdentifier id) {
+    public List<DomainEvent<ChessGameId>> getEventListById(final ChessGameId id) {
         return events.getOrDefault(id, Collections.emptyList());
     }
 }

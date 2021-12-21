@@ -19,7 +19,15 @@ public abstract class EventSourcedAggregate<TId extends AggregateIdentifier> ext
      * @return a new instance of the aggregate
      */
     public EventSourcedAggregate<TId> build(List<DomainEvent<TId>> events) {
-        throw new UnsupportedOperationException("Implement yourself");
+        for(var event : events){
+            EventSourcingHandler<EventSourcedAggregate<TId>, DomainEvent<TId>> handler = getHandlers().get(event.getClass());
+            if(handler != null){
+                handler.apply(this, event);
+            }else{
+                System.err.println("Look at this");
+            }
+        }
+        return this;
     }
 
     /**

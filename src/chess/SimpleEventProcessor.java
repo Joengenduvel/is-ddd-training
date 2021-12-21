@@ -4,7 +4,7 @@ import ddd.core.AggregateIdentifier;
 import ddd.core.DomainEvent;
 import ddd.core.EventProcessor;
 
-public class SimpleEventProcessor implements EventProcessor {
+public class SimpleEventProcessor implements EventProcessor<ChessGameId> {
 
     private static final SimpleEventProcessor INSTANCE = new SimpleEventProcessor(
             new SimpleEventRepository()
@@ -22,7 +22,7 @@ public class SimpleEventProcessor implements EventProcessor {
     }
 
     @Override
-    public <A extends AggregateIdentifier> void raise(final DomainEvent<A> event) {
+    public void raise(final DomainEvent<ChessGameId> event) {
         repository.addEvent(event);
     }
 }

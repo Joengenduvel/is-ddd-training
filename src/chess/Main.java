@@ -5,15 +5,21 @@ import chess.events.MoveMade;
 import ddd.core.DomainEvent;
 import ddd.core.EventBus;
 import ddd.core.EventHandler;
+import ddd.core.InMemoryEventBus;
 import ddd.core.businessRules.BusinessRuleViolationException;
 
 public class Main {
 
     public static void main(final String[] args) {
-        EventBus bus;
+        EventBus bus = new InMemoryEventBus();
 
-        EventHandler<MoveMade> startedEventListener = event -> System.out.println("Move made by ");
-        bus.subscribe(startedEventListener);
+        EventHandler<MoveMade> startedEventListener = new EventHandler<MoveMade>() {
+            @Override
+            public void handle(MoveMade event) {
+                System.out.println("Move made by ");
+            }
+        };
+        bus.subscribe(MoveMade.class, startedEventListener);
 
         Application app = new Application();
         app.startGame();

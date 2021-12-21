@@ -3,7 +3,7 @@ package ddd.core;
 
 import java.util.List;
 
-public interface EventRepository<T extends DomainEvent<?>> {
+public interface EventRepository<T extends DomainEvent<R>, R extends AggregateIdentifier> {
 
     /**
      * Persist event
@@ -16,5 +16,5 @@ public interface EventRepository<T extends DomainEvent<?>> {
      * @param id
      * @return
      */
-     List<T> getEventListById(AggregateIdentifier id);
+     List<T> getEventListById(R id);
 }
