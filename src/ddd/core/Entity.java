@@ -1,18 +1,15 @@
 package ddd.core;
 
-/// <summary>
-/// Represents an Entity in the domain (DDD).
-/// </summary>
-/// <typeparam name="TId">The type of the Id of the entity.</typeparam>
-public abstract class Entity<TId> {
+
+public abstract class Entity<TId extends AggregateIdentifier> {
 
     private final TId _id;
 
-    public Entity(TId id) {
+    Entity(TId id) {
         _id = id;
     }
 
-    public TId get_id() {
+    public TId getId() {
         return _id;
     }
 }

@@ -2,9 +2,10 @@ package chess;
 
 import java.util.UUID;
 
+import ddd.core.AggregateIdentifier;
 import ddd.core.ValueObject;
 
-public class ChessGameId extends ValueObject {
+public class ChessGameId extends ValueObject implements AggregateIdentifier {
 
     private final String id;
 

@@ -11,8 +11,9 @@ import chess.pieces.Knight;
 import chess.pieces.Pawn;
 import chess.pieces.Queen;
 import chess.pieces.Rook;
-import ddd.core.AggregateRoot;
 import ddd.core.DomainEvent;
+import ddd.core.EventSourcedAggregate;
+import ddd.core.EventSourcingHandler;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ChessGame extends AggregateRoot<ChessGameId> {
+public class ChessGame extends EventSourcedAggregate<ChessGameId> {
 
     private final Map<BoardPosition, ChessPiece> pieces;
     private final List<Move> pastMoves;
@@ -68,6 +69,16 @@ public class ChessGame extends AggregateRoot<ChessGameId> {
         }});
     }
 
+    @Override
+    public <E extends EventSourcedAggregate<ChessGameId>> Map<Class<?>, EventSourcingHandler<E, DomainEvent<ChessGameId>>> getHandlers() {
+        return null;
+    }
+
+    @Override
+    public EventSourcedAggregate<ChessGameId> initialize() {
+        return null;
+    }
+
     public Map<BoardPosition, ChessPiece> getPieces() {
         return Collections.unmodifiableMap(pieces);
     }
@@ -80,19 +91,12 @@ public class ChessGame extends AggregateRoot<ChessGameId> {
 
         validRuleOnPieceLevel.And(validRuleOnBoardLevel).And(validRuleOnGameLevel).ThrowIfNotSatisfied();
 
-        raiseEvent(new MoveMade(chessPiece, move.getFrom(), move.getTo()));
+        new MoveMade(this.getId(),chessPiece, move.getFrom(), move.getTo());
         pastMoves.add(move);
 
         // remove the pieces involved futurePieces.remove()
         // Add the new positions
         return true;
-    }
-
-    @Override
-    protected void when(final DomainEvent domainEvent) {
-        if (domainEvent instanceof MoveMade) {
-            handleMoveMade((MoveMade) domainEvent);
-        }
     }
 
     private void handleMoveMade(final MoveMade moveMade) {
