@@ -8,7 +8,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public abstract class Command<T extends AggregateIdentifier> {
-    @Getter
+
     private final T id;
 
     protected Command(T id) {

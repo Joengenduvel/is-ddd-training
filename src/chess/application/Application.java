@@ -20,9 +20,15 @@ public class Application {
         chessGame.start();
     }
 
-    public void makeMove(MakeMoveCommand command){
-        ChessGame chessGame = getGameById(command.getGameId());
-        chessGame.makeMove(ChessColor.WHITE,null);
+    public void makeMove(final MakeMoveCommand command){
+        ChessGame chessGame = getGameById(command.getChessGameId());
+
+        Move move = new Move(
+                command.getFrom(),
+                command.getTo()
+        );
+
+        chessGame.makeMove(ChessColor.WHITE, move);
     }
 
     private ChessGame getGameById(ChessGameId id) {

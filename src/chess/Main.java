@@ -2,7 +2,6 @@ package chess;
 
 import chess.application.Application;
 import chess.events.MoveMade;
-import ddd.core.DomainEvent;
 import ddd.core.EventBus;
 import ddd.core.EventHandler;
 import ddd.core.InMemoryEventBus;

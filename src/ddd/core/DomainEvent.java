@@ -8,7 +8,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public abstract class DomainEvent<T extends AggregateIdentifier> {
-    @Getter
+
     private final T id;
 
     protected DomainEvent(T id) {
