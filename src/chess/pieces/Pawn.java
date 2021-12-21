@@ -20,6 +20,6 @@ public class Pawn extends ChessPiece {
             return true;
         }
 
-        return move.getRowDifference() == 0 && ChessColor.BLACK.equals(getColor());
+        return move.getRowDifference() == -1 && ChessColor.BLACK.equals(getColor());
     }
 }
