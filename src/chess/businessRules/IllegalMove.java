@@ -21,4 +21,9 @@ public class IllegalMove extends BusinessRuleViolation {
     public ChessPiece getPiece() {
         return piece;
     }
+
+    @Override
+    public String toString() {
+        return piece + " cannot make " + move;
+    }
 }

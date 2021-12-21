@@ -22,4 +22,9 @@ public abstract class ChessPiece extends ValueObject {
     }
 
     public abstract boolean isValidMove(final Move move);
+
+    @Override
+    public String toString() {
+        return color.name() + " " + getClass().getSimpleName();
+    }
 }

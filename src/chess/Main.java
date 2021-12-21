@@ -22,8 +22,29 @@ public class Main {
         try {
             game.makeMove(ChessColor.WHITE, moveMostLeftPieceOfWhiteOneUp());
         } catch (BusinessRuleViolationException e) {
-            System.out.println("Successfully blocked invalid move for location without piece");
+            for( var violation : e.getViolations()){
+                System.out.println(violation.toString());
+            }
+            System.out.println("Successfully blocked invalid move for location without piece: ");
         }
+
+
+
+        try {
+            game.makeMove(ChessColor.WHITE, moveKingForward());
+        } catch (BusinessRuleViolationException e) {
+            for( var violation : e.getViolations()){
+                System.out.println(violation.toString());
+            }
+            System.out.println("Successfully blocked invalid move for destination with piece: ");
+        }
+    }
+
+    private static Move moveKingForward() {
+        return new Move(
+                new BoardPosition('d', (short) 1),
+                new BoardPosition('d', (short) 2)
+        );
     }
 
     private static Move moveMostLeftPieceOfWhiteOneUp() {

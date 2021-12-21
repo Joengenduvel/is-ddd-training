@@ -75,7 +75,7 @@ public class ChessGame extends AggregateRoot<ChessGameId> {
     public boolean makeMove(final ChessColor color, final Move move){
         ChessPiece chessPiece = pieces.get(move.getFrom());
         ValidRuleOnPieceLevel validRuleOnPieceLevel = new ValidRuleOnPieceLevel(chessPiece, move);
-        ValidRuleOnBoardLevel validRuleOnBoardLevel = new ValidRuleOnBoardLevel();
+        ValidRuleOnBoardLevel validRuleOnBoardLevel = new ValidRuleOnBoardLevel(chessPiece, move, pieces);
         ValidRuleOnGameLevel validRuleOnGameLevel = new ValidRuleOnGameLevel();
 
         validRuleOnPieceLevel.And(validRuleOnBoardLevel).And(validRuleOnGameLevel).ThrowIfNotSatisfied();
